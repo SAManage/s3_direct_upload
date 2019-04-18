@@ -120,7 +120,8 @@ $.fn.S3Uploader = (options) ->
         data
 
   build_content_object = ($uploadForm, data) ->
-    file, result = data.files[0], data.result
+    file = data.files[0]
+    result = data.result
     content = {}
     if result # Use the S3 response to set the URL to avoid character encodings bugs
       content.url            = $(result).find("Location").text()
