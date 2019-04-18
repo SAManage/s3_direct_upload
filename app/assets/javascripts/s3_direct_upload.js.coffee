@@ -64,7 +64,7 @@ $.fn.S3Uploader = (options) ->
           data.context.find('.bar').css('width', progress + '%')
 
       done: (e, data) ->
-        content = build_content_object $uploadForm, data.files[0], data.result
+        content = build_content_object $uploadForm, data
 
         callback_url = $uploadForm.data('callback-url')
         if callback_url
@@ -86,7 +86,7 @@ $.fn.S3Uploader = (options) ->
         $uploadForm.trigger("s3_uploads_complete", [content]) unless current_files.length
 
       fail: (e, data) ->
-        content = build_content_object $uploadForm, data.files[0], data.result
+        content = build_content_object $uploadForm, data
         content.error_thrown = data.errorThrown
 
         data.context.remove() if data.context && settings.remove_failed_progress_bar # remove progress bar
@@ -119,7 +119,8 @@ $.fn.S3Uploader = (options) ->
           $uploadForm.find("input[name='key']").val(settings.path + key)
         data
 
-  build_content_object = ($uploadForm, file, result) ->
+  build_content_object = ($uploadForm, data) ->
+    file, result = data.files[0], data.result
     content = {}
     if result # Use the S3 response to set the URL to avoid character encodings bugs
       content.url            = $(result).find("Location").text()
@@ -135,6 +136,7 @@ $.fn.S3Uploader = (options) ->
     content.filetype         = file.type if 'type' of file
     content.unique_id        = file.unique_id if 'unique_id' of file
     content.relativePath     = build_relativePath(file) if has_relativePath(file)
+    content.jqXHR            = data.jqXHR
     content = $.extend content, settings.additional_data if settings.additional_data
     content
 
